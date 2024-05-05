@@ -6,9 +6,9 @@ go get -u github.com/vannleonheart/flip-api-go
 #### Config
 ```go
 flipConfig := flip.Config{
-    BaseV2Url: "{flip_api_v2_url}",
-    BaseV3Url: "{flip_api_v3_url}",
-    SecretKey: "{your_secret_key}",
+    BaseUrl:         "{flip_api_base_url}",
+    ApiSecretKey:    "{your_flip_api_secret_key}",
+    ValidationToken: "{your_flip_validation_token}",
 }
 ```
 #### Create Client
@@ -25,9 +25,21 @@ if err != nil {
 
 fmt.Println(result.Balance)
 ```
-#### Get Bank Info
+#### Get All Bank Info
 ```go
-result, err := flipClient.GetBankInfo()
+result, err := flipClient.GetBankInfo("")
+
+if err != nil {
+    // handle error
+}
+
+fmt.Println(len(result))
+```
+#### Get Single Bank Info
+```go
+bankCode := "bca"
+
+result, err := flipClient.GetBankInfo(bankCode)
 
 if err != nil {
     // handle error
@@ -43,11 +55,14 @@ if err != nil {
     // handle error
 }
 
-fmt.Println(result.Balance)
+fmt.Println(result.Maintenance)
 ```
 #### Bank Account Inquiry
 ```go
-result, err := flipClient.BankAccountInquiry()
+bankCode := "{flip_bank_code}"
+bankAccountNo := "{target_bank_account_number}"
+
+result, err := flipClient.BankAccountInquiry(bankCode, bankAccountNo, nil)
 
 if err != nil {
     // handle error
@@ -59,10 +74,12 @@ fmt.Println(result.Status)
 ```go
 idempotencyKey := "{your_idempotency_key}"
 
+testAmount := 100000
+
 requestData := DisbursementRequest {
-    AccountNumber: "",
-    BankCode: "",
-    Amount: 100000,
+    AccountNumber: "{target_bank_account_number}",
+    BankCode: "{flip_bank_code}",
+    Amount: testAmount,
     Remark: "",
     RecipientCity: "",
     BeneficiaryEmail: "",
@@ -74,11 +91,11 @@ if err != nil {
     // handle error
 }
 
-fmt.Println(result.Status)
+fmt.Println(result.Id)
 ```
 #### Get Disbursement By Id
 ```go
-transactionId := "{transaction_id}"
+transactionId := "{flip_transaction_id}"
 
 result, err := flipClient.GetDisbursementById(transactionId)
 
